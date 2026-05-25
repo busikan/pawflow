@@ -16,7 +16,6 @@ export default function LoginScreen({
     // 💡 核心修改：使用 min-h-screen 确保撑满全屏，添加 items-center justify-center 垂直水平完美居中
     <div className="min-h-screen bg-gradient-to-b from-orange-50 via-[#fffaf1] to-emerald-50 px-6 flex flex-col items-center justify-center">
       
-      {/* 🗑️ 删除了原来这里的 <div className="h-[76px]" /> */}
 
       <motion.div
         initial={{ opacity: 0, y: 18 }}
@@ -85,7 +84,7 @@ export default function LoginScreen({
         </p>
       </motion.div>
 
-      {/* 🗑️ 删除了原来底部的 <div className="flex-1" /> */}
+      
     </div>
   );
 }

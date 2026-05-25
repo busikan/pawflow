@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+
 import PhoneFrame from "@/components/PhoneFrame";
 import SplashScreen from "@/components/SplashScreen";
 import LoginScreen from "@/components/LoginScreen";
@@ -10,10 +11,20 @@ import HomeScreen from "@/components/HomeScreen";
 import LoadingPathScreen from "@/components/LoadingPathScreen";
 import PlanScreen from "@/components/PlanScreen";
 
+type Screen =
+  | "splash"
+  | "login"
+  | "register"
+  | "pet"
+  | "home"
+  | "loading"
+  | "plan";
+
 export default function Page() {
-  const [screen, setScreen] = useState<
-    "splash" | "login" | "register" | "pet" | "home" | "loading" | "plan"
-  >("splash");
+  const [screen, setScreen] = useState<Screen>("splash");
+
+  // 是否已经显示过首页欢迎弹窗
+  const [hasShownWelcome, setHasShownWelcome] = useState(false);
 
   return (
     <PhoneFrame>
@@ -25,6 +36,7 @@ export default function Page() {
         <LoginScreen
           onLogin={() => setScreen("pet")}
           onRegister={() => setScreen("register")}
+          onGuest={() => setScreen("home")}
         />
       )}
 
@@ -37,7 +49,11 @@ export default function Page() {
       )}
 
       {screen === "home" && (
-        <HomeScreen onGenerate={() => setScreen("loading")} />
+        <HomeScreen
+          onGenerate={() => setScreen("loading")}
+          showWelcome={!hasShownWelcome}
+          onCloseWelcome={() => setHasShownWelcome(true)}
+        />
       )}
 
       {screen === "loading" && (
