@@ -1,8 +1,31 @@
-import { defaultPet, products, spots } from "@/data/mockData";
-import { WeekendPlan } from "@/types/app";
+import { defaultPet, products, spots, businesses } from "../data/mockData";
+import { WeekendPlan } from "../types/app";
+import { Pet } from "../store/useAppStore";
 
-export function generateWeekendPlan(userInput: string): WeekendPlan {
-  const input = userInput.toLowerCase();
+function parseWeight(weight: string | number | undefined) {
+  if (typeof weight === "number") return weight;
+  if (!weight) return defaultPet.weight;
+
+  const matched = weight.match(/\d+(\.\d+)?/);
+  return matched ? Number(matched[0]) : defaultPet.weight;
+}
+
+function getPetSize(weight: number) {
+  if (weight >= 25) return "large";
+  if (weight >= 10) return "medium";
+  return "small";
+}
+
+export function generateWeekendPlan(
+  userInput: unknown = "",
+  activePet?: Pet | null
+): WeekendPlan {
+  const input = typeof userInput === "string" ? userInput.toLowerCase() : "";
+
+  const petName = activePet?.name || defaultPet.name;
+  const petBreed = activePet?.breed || defaultPet.breed;
+  const petWeight = parseWeight(activePet?.weight);
+  const petSize = getPetSize(petWeight);
 
   let selectedSpot = spots[0];
 
@@ -14,31 +37,38 @@ export function generateWeekendPlan(userInput: string): WeekendPlan {
     selectedSpot = spots[2];
   }
 
-  const activityCoefficient = 1.05;
+  if (petSize === "small" && input.includes("轻松")) {
+    selectedSpot = spots[1];
+  }
+
+  const activityCoefficient =
+    petSize === "large" ? 1.05 : petSize === "medium" ? 0.9 : 0.65;
+
   const calories = Math.round(
-    defaultPet.weight * selectedSpot.distanceKm * activityCoefficient
+    petWeight * selectedSpot.distanceKm * activityCoefficient
   );
 
   const selectedProduct =
-    products.find((p) => Math.abs(p.calories - calories) < 25) || products[0];
+    products.find((p) => Math.abs(p.calories - calories) < 30) || products[0];
 
   return {
     id: Date.now().toString(),
     title: `${selectedSpot.name} 周末活动计划`,
     spot: selectedSpot,
     product: selectedProduct,
+    businesses,
     score: selectedSpot.id === "forest-trail" ? 92 : 86,
     duration: selectedSpot.id === "forest-trail" ? "3 h" : "2 h",
     calories,
     reason: [
-      `Coco 是 ${defaultPet.weight}kg 的中大型犬，适合中等强度户外活动。`,
-      `${selectedSpot.name} 符合你的需求：${selectedSpot.tags.join("、")}。`,
-      `本次活动预计消耗 ${calories} kcal，可匹配附近宠物补给商品。`,
+      `${petName} 是 ${petWeight}kg 的${petSize === "large" ? "中大型犬" : petSize === "medium" ? "中型犬" : "小型犬"}，适合相应强度的周末活动。`,
+      `${selectedSpot.name} 符合当前需求：${selectedSpot.tags.join("、")}。`,
+      `根据 ${petBreed} 的体型和预计活动距离，本次活动预计消耗 ${calories} kcal。`,
     ],
     timeline: [
       {
         time: "09:00",
-        title: "从家出发",
+        title: `带 ${petName} 从家出发`,
         desc: `预计自驾 ${selectedSpot.driveTime} 分钟`,
       },
       {

@@ -1,5 +1,5 @@
 import { PetProfile, Product, Spot } from "@/types/app";
-
+import { Business } from "@/types/app";
 export const defaultPet: PetProfile = {
   name: "Coco",
   breed: "金毛 Golden Retriever",
@@ -61,4 +61,31 @@ export const products: Product[] = [
     price: "¥16.8",
     distance: "520m",
   },
-];5
+];
+
+export const businesses: Business[] = [
+  {
+    id: "paw-coffee",
+    name: "Paw Coffee",
+    type: "宠物友好咖啡馆",
+    distance: "距离目的地 500m",
+    desc: "提供宠物水碗、户外座位，适合作为活动中段休息点。",
+    tag: "休息推荐",
+  },
+  {
+    id: "happy-pet-store",
+    name: "Happy Pet Store",
+    type: "宠物补给店",
+    distance: "距离路线 300m",
+    desc: "可购买低脂训练零食、鸡肉洁牙棒等运动后轻补给。",
+    tag: "补给推荐",
+  },
+  {
+    id: "city-pet-clinic",
+    name: "City Pet Clinic",
+    type: "宠物医院",
+    distance: "距离路线 1.2km",
+    desc: "作为周末短途出行的备用安全点。",
+    tag: "安全备用",
+  },
+];

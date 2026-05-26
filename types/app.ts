@@ -27,6 +27,15 @@ export type Product = {
   distance: string;
 };
 
+export type Business = {
+  id: string;
+  name: string;
+  type: string;
+  distance: string;
+  desc: string;
+  tag: string;
+};
+
 export type WeekendPlan = {
   id: string;
   title: string;
@@ -35,6 +44,7 @@ export type WeekendPlan = {
   score: number;
   duration: string;
   calories: number;
+  businesses: Business[];
   reason: string[];
   timeline: {
     time: string;
