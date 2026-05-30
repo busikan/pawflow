@@ -1,5 +1,8 @@
-import { PetProfile, Product, Spot } from "@/types/app";
+import { PetProfile, Product, Spot, LatLng } from "@/types/app";
 import { Business } from "@/types/app";
+
+export const HOME_LOCATION: LatLng = [119.724, 30.234];
+
 export const defaultPet: PetProfile = {
   name: "Coco",
   breed: "金毛 Golden Retriever",
@@ -18,6 +21,8 @@ export const spots: Spot[] = [
     distanceKm: 2.4,
     tags: ["风景好", "短途自驾", "宠物友好", "凉快一点"],
     image: "/scenic/qingshan-lake.jpg",
+    location: [119.765, 30.258],
+    address: "杭州市临安区青山湖国家森林公园",
   },
   {
     id: "pet-cafe",
@@ -27,6 +32,8 @@ export const spots: Spot[] = [
     distanceKm: 1.2,
     tags: ["宠物友好", "咖啡馆", "轻松", "下雨"],
     image: "/scenic/pet-cafe.jpg",
+    location: [119.758, 30.251],
+    address: "杭州市临安区青山湖大道",
   },
   {
     id: "riverside",
@@ -36,6 +43,8 @@ export const spots: Spot[] = [
     distanceKm: 1.8,
     tags: ["风景好", "拍照", "轻运动"],
     image: "/scenic/riverside.jpg",
+    location: [119.752, 30.246],
+    address: "杭州市临安区滨河绿道",
   },
 ];
 
@@ -71,6 +80,7 @@ export const businesses: Business[] = [
     distance: "距离目的地 500m",
     desc: "提供宠物水碗、户外座位，适合作为活动中段休息点。",
     tag: "休息推荐",
+    location: [119.758, 30.251],
   },
   {
     id: "happy-pet-store",
@@ -79,6 +89,7 @@ export const businesses: Business[] = [
     distance: "距离路线 300m",
     desc: "可购买低脂训练零食、鸡肉洁牙棒等运动后轻补给。",
     tag: "补给推荐",
+    location: [119.761, 30.255],
   },
   {
     id: "city-pet-clinic",
@@ -87,5 +98,6 @@ export const businesses: Business[] = [
     distance: "距离路线 1.2km",
     desc: "作为周末短途出行的备用安全点。",
     tag: "安全备用",
+    location: [119.748, 30.242],
   },
 ];

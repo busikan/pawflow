@@ -1,5 +1,5 @@
-import { defaultPet, products, spots, businesses } from "../data/mockData";
-import { WeekendPlan } from "../types/app";
+import { defaultPet, products, spots, businesses, HOME_LOCATION } from "../data/mockData";
+import { MapWaypoint, WeekendPlan } from "../types/app";
 import { Pet } from "../store/useAppStore";
 
 function parseWeight(weight: string | number | undefined) {
@@ -51,6 +51,40 @@ export function generateWeekendPlan(
   const selectedProduct =
     products.find((p) => Math.abs(p.calories - calories) < 30) || products[0];
 
+  const cafeBusiness = businesses[0];
+  const supplyBusiness = businesses[1];
+
+  const waypoints: MapWaypoint[] = [
+    {
+      id: "home",
+      label: "家",
+      position: HOME_LOCATION,
+      timelineIndex: 0,
+      color: "#111827",
+    },
+    {
+      id: "spot",
+      label: selectedSpot.type,
+      position: selectedSpot.location,
+      timelineIndex: 1,
+      color: "#16a34a",
+    },
+    {
+      id: "cafe",
+      label: "咖啡",
+      position: cafeBusiness.location,
+      timelineIndex: 3,
+      color: "#f97316",
+    },
+    {
+      id: "supply",
+      label: "补给",
+      position: supplyBusiness.location,
+      timelineIndex: 4,
+      color: "#a855f7",
+    },
+  ];
+
   return {
     id: Date.now().toString(),
     title: `${selectedSpot.name} 周末活动计划`,
@@ -92,5 +126,46 @@ export function generateWeekendPlan(
         desc: `推荐 ${selectedProduct.name}，约 ${selectedProduct.calories} kcal`,
       },
     ],
+    waypoints,
   };
+}
+
+export function getPlanWaypoints(plan: WeekendPlan): MapWaypoint[] {
+  if (plan.waypoints?.length) {
+    return plan.waypoints;
+  }
+
+  const cafeBusiness = plan.businesses[0] ?? businesses[0];
+  const supplyBusiness = plan.businesses[1] ?? businesses[1];
+
+  return [
+    {
+      id: "home",
+      label: "家",
+      position: HOME_LOCATION,
+      timelineIndex: 0,
+      color: "#111827",
+    },
+    {
+      id: "spot",
+      label: plan.spot.type,
+      position: plan.spot.location,
+      timelineIndex: 1,
+      color: "#16a34a",
+    },
+    {
+      id: "cafe",
+      label: "咖啡",
+      position: cafeBusiness.location,
+      timelineIndex: 3,
+      color: "#f97316",
+    },
+    {
+      id: "supply",
+      label: "补给",
+      position: supplyBusiness.location,
+      timelineIndex: 4,
+      color: "#a855f7",
+    },
+  ];
 }

@@ -1,5 +1,15 @@
 import { LucideIcon } from "lucide-react";
 
+export type LatLng = [lng: number, lat: number];
+
+export type MapWaypoint = {
+  id: string;
+  label: string;
+  position: LatLng;
+  timelineIndex: number;
+  color?: string;
+};
+
 export type PetProfile = {
   name: string;
   breed: string;
@@ -17,6 +27,8 @@ export type Spot = {
   distanceKm: number;
   tags: string[];
   image: string;
+  location: LatLng;
+  address?: string;
 };
 
 export type Product = {
@@ -34,6 +46,7 @@ export type Business = {
   distance: string;
   desc: string;
   tag: string;
+  location: LatLng;
 };
 
 export type WeekendPlan = {
@@ -51,4 +64,5 @@ export type WeekendPlan = {
     title: string;
     desc: string;
   }[];
+  waypoints?: MapWaypoint[];
 };

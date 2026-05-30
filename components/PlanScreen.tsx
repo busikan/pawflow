@@ -17,6 +17,8 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { Business, WeekendPlan } from "@/types/app";
+import AmapRouteMap from "@/components/AmapRouteMap";
+import { getPlanWaypoints } from "@/lib/recommendation";
 
 type TimelineItem = {
   time: string;
@@ -81,10 +83,11 @@ export default function PlanScreen({
 
           <div className="rounded-3xl bg-white shadow-sm overflow-hidden">
             <div className="h-56 relative bg-emerald-50">
-              <SimpleMap
-                spotType={plan.spot.type}
-                timeline={plan.timeline}
-                onSelectNode={(item) => setSelectedItem(item)}
+              <AmapRouteMap
+                waypoints={getPlanWaypoints(plan)}
+                onSelectNode={(index) =>
+                  setSelectedItem(plan.timeline[index] || plan.timeline[0])
+                }
               />
             </div>
 
@@ -410,83 +413,6 @@ function Metric({ label, value }: { label: string; value: string }) {
     <div>
       <p className="text-xs text-zinc-400">{label}</p>
       <p className="text-sm font-bold text-zinc-900 mt-1">{value}</p>
-    </div>
-  );
-}
-
-function SimpleMap({
-  spotType,
-  timeline,
-  onSelectNode,
-}: {
-  spotType: string;
-  timeline: TimelineItem[];
-  onSelectNode: (item: TimelineItem) => void;
-}) {
-  const nodes = [
-    { x: 40, y: 175, label: "家", color: "#111827", index: 0 },
-    { x: 180, y: 105, label: spotType, color: "#16a34a", index: 1 },
-    { x: 285, y: 75, label: "咖啡", color: "#f97316", index: 3 },
-    { x: 345, y: 120, label: "补给", color: "#a855f7", index: 4 },
-  ];
-
-  return (
-    <div className="absolute inset-0">
-      <svg viewBox="0 0 390 230" className="w-full h-full">
-        <rect width="390" height="230" fill="#ecfdf5" />
-        <circle cx="70" cy="70" r="48" fill="#bbf7d0" opacity="0.8" />
-        <circle cx="310" cy="80" r="56" fill="#fde68a" opacity="0.7" />
-        <circle cx="300" cy="180" r="40" fill="#bfdbfe" opacity="0.45" />
-
-        <path
-          d="M30 180 C 80 120, 130 160, 180 105 S 290 70, 360 120"
-          fill="none"
-          stroke="#fed7aa"
-          strokeWidth="18"
-          strokeLinecap="round"
-        />
-
-        <path
-          d="M30 180 C 80 120, 130 160, 180 105 S 290 70, 360 120"
-          fill="none"
-          stroke="#f97316"
-          strokeWidth="8"
-          strokeLinecap="round"
-        />
-
-        {nodes.map((node, displayIndex) => (
-          <g
-            key={node.label}
-            onClick={() => onSelectNode(timeline[node.index] || timeline[0])}
-            className="cursor-pointer"
-          >
-            <circle cx={node.x} cy={node.y} r="15" fill="white" />
-            <circle cx={node.x} cy={node.y} r="11" fill={node.color} />
-
-            <text
-              x={node.x}
-              y={node.y + 4}
-              textAnchor="middle"
-              fontSize="11"
-              fill="white"
-              fontWeight="800"
-            >
-              {displayIndex + 1}
-            </text>
-
-            <text
-              x={node.x}
-              y={node.y - 21}
-              textAnchor="middle"
-              fontSize="11"
-              fill="#111827"
-              fontWeight="700"
-            >
-              {node.label}
-            </text>
-          </g>
-        ))}
-      </svg>
     </div>
   );
 }
