@@ -12,6 +12,7 @@ import {
   Heart,
   Settings,
   ChevronRight,
+  HeartPulse,
 } from "lucide-react";
 
 import { Pet, useAppStore } from "@/store/useAppStore";
@@ -20,10 +21,14 @@ export default function PetProfileScreen({
   onBack,
   onOpenHistory,
   onOpenFavorites,
+  onOpenSettings,
+  onHealthAnalyze,
 }: {
   onBack: () => void;
   onOpenHistory: () => void;
   onOpenFavorites: () => void;
+  onOpenSettings: () => void;
+  onHealthAnalyze: () => void;
 }) {
   const {
     pets,
@@ -62,16 +67,14 @@ export default function PetProfileScreen({
 
     if (exists) {
       updatePet(editingPet);
+      setShowEditor(false);
+      setEditingPet(null);
     } else {
       addPet(editingPet);
+      setShowEditor(false);
+      setEditingPet(null);
+      onHealthAnalyze();
     }
-
-    setShowEditor(false);
-    setEditingPet(null);
-  }
-
-  function handleDeletePet(id: string) {
-    deletePet(id);
   }
 
   const activePet = pets.find((pet) => pet.id === activePetId) || pets[0];
@@ -106,7 +109,9 @@ export default function PetProfileScreen({
 
           <p className="mt-2 text-sm text-white/80">
             {activePet
-              ? `${activePet.breed} · ${activePet.age} · ${activePet.weight}`
+              ? `${activePet.breed || "未知品种"} · ${
+                  activePet.age || "年龄未知"
+                } · ${activePet.weight || "体重未知"}`
               : "请先添加宠物档案"}
           </p>
         </div>
@@ -124,6 +129,16 @@ export default function PetProfileScreen({
               添加宠物
             </button>
           </div>
+
+          {pets.length > 0 && (
+            <button
+              onClick={onHealthAnalyze}
+              className="mt-4 w-full rounded-2xl bg-zinc-900 py-3 text-sm font-semibold text-white flex items-center justify-center gap-2"
+            >
+              <HeartPulse className="h-4 w-4" />
+              重新进行 AI 健康分析
+            </button>
+          )}
 
           <div className="mt-5 space-y-4">
             {pets.map((pet) => {
@@ -196,7 +211,7 @@ export default function PetProfileScreen({
                     </button>
 
                     <button
-                      onClick={() => handleDeletePet(pet.id)}
+                      onClick={() => deletePet(pet.id)}
                       className="rounded-2xl bg-white py-2 text-xs font-semibold text-red-500 flex items-center justify-center gap-1"
                     >
                       <Trash2 className="h-3 w-3" />
@@ -216,8 +231,15 @@ export default function PetProfileScreen({
                 </p>
 
                 <p className="mt-2 text-sm text-zinc-500">
-                  添加宠物后，AI 会根据它的状态生成周末计划。
+                  添加宠物后，AI 会根据它的状态生成健康画像和周末计划。
                 </p>
+
+                <button
+                  onClick={openAddPet}
+                  className="mt-5 rounded-2xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white"
+                >
+                  创建第一个宠物档案
+                </button>
               </div>
             )}
           </div>
@@ -242,7 +264,7 @@ export default function PetProfileScreen({
             icon={Settings}
             title="设置"
             desc="账号、通知与隐私设置"
-            onClick={() => {}}
+            onClick={onOpenSettings}
           />
         </div>
       </div>

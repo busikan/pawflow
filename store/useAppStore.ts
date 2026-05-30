@@ -13,18 +13,6 @@ export type Pet = {
   preference: string;
 };
 
-const defaultPets: Pet[] = [
-  {
-    id: "coco",
-    name: "Coco",
-    breed: "金毛 Golden Retriever",
-    age: "3 岁",
-    weight: "30 kg",
-    health: "健康，无明显关节问题",
-    preference: "户外散步、草地、短途自驾",
-  },
-];
-
 type AppState = {
   pets: Pet[];
   activePetId: string;
@@ -37,6 +25,7 @@ type AppState = {
   updatePet: (pet: Pet) => void;
   deletePet: (id: string) => void;
   setActivePetId: (id: string) => void;
+  resetPetProfile: () => void;
 
   setCurrentPlan: (plan: WeekendPlan | null) => void;
   addHistoryPlan: (plan: WeekendPlan) => void;
@@ -47,8 +36,8 @@ type AppState = {
 };
 
 export const useAppStore = create<AppState>((set, get) => ({
-  pets: defaultPets,
-  activePetId: "coco",
+  pets: [],
+  activePetId: "",
   currentPlan: null,
   historyPlans: [],
   favoriteBusinesses: [],
@@ -56,11 +45,21 @@ export const useAppStore = create<AppState>((set, get) => ({
   setPets: (pets) => {
     set({ pets });
     localStorage.setItem("pawflow-pets", JSON.stringify(pets));
+
+    if (pets.length === 0) {
+      set({ activePetId: "" });
+      localStorage.removeItem("pawflow-active-pet");
+    }
   },
 
   addPet: (pet) => {
     const nextPets = [pet, ...get().pets];
-    set({ pets: nextPets, activePetId: pet.id });
+
+    set({
+      pets: nextPets,
+      activePetId: pet.id,
+    });
+
     localStorage.setItem("pawflow-pets", JSON.stringify(nextPets));
     localStorage.setItem("pawflow-active-pet", pet.id);
   },
@@ -87,12 +86,28 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
 
     localStorage.setItem("pawflow-pets", JSON.stringify(nextPets));
-    localStorage.setItem("pawflow-active-pet", nextActivePetId);
+
+    if (nextActivePetId) {
+      localStorage.setItem("pawflow-active-pet", nextActivePetId);
+    } else {
+      localStorage.removeItem("pawflow-active-pet");
+    }
   },
 
   setActivePetId: (id) => {
     set({ activePetId: id });
     localStorage.setItem("pawflow-active-pet", id);
+  },
+
+  resetPetProfile: () => {
+    set({
+      pets: [],
+      activePetId: "",
+      currentPlan: null,
+    });
+
+    localStorage.removeItem("pawflow-pets");
+    localStorage.removeItem("pawflow-active-pet");
   },
 
   setCurrentPlan: (plan) => {
@@ -101,6 +116,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   addHistoryPlan: (plan) => {
     const nextHistory = [plan, ...get().historyPlans].slice(0, 10);
+
     set({ historyPlans: nextHistory });
     localStorage.setItem("pawflow-history", JSON.stringify(nextHistory));
   },
@@ -126,9 +142,15 @@ export const useAppStore = create<AppState>((set, get) => ({
 
     if (savedPets) {
       const parsedPets = JSON.parse(savedPets) as Pet[];
+
       set({
         pets: parsedPets,
         activePetId: savedActivePetId || parsedPets[0]?.id || "",
+      });
+    } else {
+      set({
+        pets: [],
+        activePetId: "",
       });
     }
 

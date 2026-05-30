@@ -7,12 +7,15 @@ import SplashScreen from "@/components/SplashScreen";
 import LoginScreen from "@/components/LoginScreen";
 import RegisterScreen from "@/components/RegisterScreen";
 import PetProfileScreen from "@/components/PetProfileScreen";
+import HealthLoadingScreen from "@/components/HealthLoadingScreen";
+import HealthSummaryScreen from "@/components/HealthSummaryScreen";
 import HomeScreen from "@/components/HomeScreen";
 import LoadingPathScreen from "@/components/LoadingPathScreen";
 import PlanScreen from "@/components/PlanScreen";
 import HistoryScreen from "@/components/HistoryScreen";
 import FavoritesScreen from "@/components/FavoritesScreen";
 import BusinessDetailScreen from "@/components/BusinessDetailScreen";
+import SettingScreen from "@/components/SettingScreen";
 
 import { generateWeekendPlan } from "@/lib/recommendation";
 import { useAppStore } from "@/store/useAppStore";
@@ -23,12 +26,15 @@ type Screen =
   | "login"
   | "register"
   | "petProfile"
+  | "healthLoading"
+  | "healthSummary"
   | "home"
   | "loading"
   | "plan"
   | "history"
   | "favorites"
-  | "businessDetail";
+  | "businessDetail"
+  | "settings";
 
 export default function Page() {
   const [screen, setScreen] = useState<Screen>("splash");
@@ -52,11 +58,25 @@ export default function Page() {
     addHistoryPlan,
     toggleFavoriteBusiness,
     loadFromLocalStorage,
+    resetPetProfile,
   } = useAppStore();
 
   useEffect(() => {
     loadFromLocalStorage();
   }, [loadFromLocalStorage]);
+
+  function enterAfterLogin() {
+    if (pets.length === 0) {
+      setScreen("petProfile");
+    } else {
+      setScreen("home");
+    }
+  }
+
+  function startRegisterFlow() {
+    resetPetProfile();
+    setScreen("petProfile");
+  }
 
   function handleGenerate(input: string) {
     setPendingInput(input);
@@ -78,6 +98,14 @@ export default function Page() {
     setScreen("businessDetail");
   }
 
+  function clearLocalDemoData() {
+    localStorage.clear();
+    resetPetProfile();
+    setCurrentPlan(null);
+    setHasShownWelcome(false);
+    setScreen("login");
+  }
+
   return (
     <PhoneFrame>
       {screen === "splash" && (
@@ -86,22 +114,38 @@ export default function Page() {
 
       {screen === "login" && (
         <LoginScreen
-          onLogin={() => setScreen("petProfile")}
+          onLogin={enterAfterLogin}
           onRegister={() => setScreen("register")}
           onGuest={() => setScreen("home")}
         />
       )}
 
       {screen === "register" && (
-        <RegisterScreen onRegister={() => setScreen("petProfile")} />
+        <RegisterScreen onRegister={startRegisterFlow} />
       )}
 
       {screen === "petProfile" && (
         <PetProfileScreen
-          onBack={() => setScreen("home")}
+          onBack={() => {
+            if (pets.length === 0) {
+              setScreen("petProfile");
+            } else {
+              setScreen("home");
+            }
+          }}
           onOpenHistory={() => setScreen("history")}
           onOpenFavorites={() => setScreen("favorites")}
+          onOpenSettings={() => setScreen("settings")}
+          onHealthAnalyze={() => setScreen("healthLoading")}
         />
+      )}
+
+      {screen === "healthLoading" && (
+        <HealthLoadingScreen onDone={() => setScreen("healthSummary")} />
+      )}
+
+      {screen === "healthSummary" && (
+        <HealthSummaryScreen onContinue={() => setScreen("home")} />
       )}
 
       {screen === "home" && (
@@ -142,6 +186,13 @@ export default function Page() {
           businesses={favoriteBusinesses}
           onBack={() => setScreen("petProfile")}
           onOpenBusiness={openBusinessDetail}
+        />
+      )}
+
+      {screen === "settings" && (
+        <SettingScreen
+          onBack={() => setScreen("petProfile")}
+          onClearData={clearLocalDemoData}
         />
       )}
 
